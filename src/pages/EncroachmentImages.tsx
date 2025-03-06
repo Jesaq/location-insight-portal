@@ -48,6 +48,19 @@ const EncroachmentImages = () => {
     }
   }, [locationId, sublocationId]);
 
+  // Group images by year
+  const imagesByYear: Record<string, {src: string; alt: string; year: string; category: string}[]> = {};
+  
+  images.forEach(image => {
+    if (!imagesByYear[image.year]) {
+      imagesByYear[image.year] = [];
+    }
+    imagesByYear[image.year].push(image);
+  });
+
+  // Sort years in descending order (most recent first)
+  const sortedYears = Object.keys(imagesByYear).sort((a, b) => parseInt(b) - parseInt(a));
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white">
       <div className="page-container py-16">
@@ -74,7 +87,16 @@ const EncroachmentImages = () => {
             <p className="text-blue">Loading satellite imagery...</p>
           </div>
         ) : (
-          <ImageGallery images={images} />
+          <div className="space-y-16">
+            {sortedYears.map(year => (
+              <div key={year} className="animate-in">
+                <h2 className="text-2xl font-display font-bold text-blue-dark mb-6 border-b border-blue-light/20 pb-2">
+                  {year} Satellite Images
+                </h2>
+                <ImageGallery images={imagesByYear[year]} />
+              </div>
+            ))}
+          </div>
         )}
 
         <div className="mt-12 glass-panel p-6 animate-in">
