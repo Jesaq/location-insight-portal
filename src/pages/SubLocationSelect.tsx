@@ -136,16 +136,27 @@ const SubLocationSelect = () => {
   const sublocations = effectiveLocationId ? sublocationData[effectiveLocationId] || [] : [];
   const locationName = effectiveLocationId ? locationNames[effectiveLocationId] || effectiveLocationId : "";
 
-  // If we detected a sublocation directly in the URL, inform the user
+  // If we detected a sublocation directly in the URL, redirect to services page
   useEffect(() => {
     if (parentLocationId && locationId && parentLocationId !== locationId) {
-      toast({
-        title: "Navigated to parent location",
-        description: `Showing sublocations for ${locationNames[parentLocationId]}`,
-        duration: 3000
-      });
+      // Find if this is a valid sublocation
+      const validSublocation = sublocationData[parentLocationId]?.find(
+        sub => sub.id === locationId
+      );
+      
+      if (validSublocation) {
+        // Navigate to the services page for this sublocation
+        navigate(`/services/${parentLocationId}/${locationId}`);
+      } else {
+        // If not a valid sublocation, show toast and stay on parent location
+        toast({
+          title: "Navigated to parent location",
+          description: `Showing sublocations for ${locationNames[parentLocationId]}`,
+          duration: 3000
+        });
+      }
     }
-  }, [locationId, parentLocationId]);
+  }, [locationId, parentLocationId, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white">

@@ -1,5 +1,5 @@
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { MapPin } from "lucide-react";
 
 interface LocationCardProps {
@@ -12,11 +12,22 @@ interface LocationCardProps {
 
 const LocationCard = ({ id, name, description, image, staggerIndex = 0 }: LocationCardProps) => {
   const navigate = useNavigate();
+  const { locationId } = useParams<{ locationId: string }>();
+
+  const handleClick = () => {
+    if (locationId) {
+      // If we're in the sublocation selection page, navigate to services
+      navigate(`/services/${locationId}/${id}`);
+    } else {
+      // If we're in the main locations page, navigate to sublocation selection
+      navigate(`/location/${id}`);
+    }
+  };
 
   return (
     <div 
       className={`glass-card p-6 hover-lift cursor-pointer animate-in stagger-${staggerIndex}`}
-      onClick={() => navigate(`/location/${id}`)}
+      onClick={handleClick}
     >
       <div className="image-container mb-4 aspect-video">
         <img 
