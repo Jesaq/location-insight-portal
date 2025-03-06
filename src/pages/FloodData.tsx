@@ -2,7 +2,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
-import FloodInfoCard, { FloodData } from "@/components/FloodInfoCard";
+import FloodInfoCard from "@/components/FloodInfoCard";
+import type { FloodData as FloodDataType } from "@/components/FloodInfoCard";
 
 // Location names mapping
 const locationNames: Record<string, Record<string, string>> = {
@@ -24,7 +25,7 @@ const locationNames: Record<string, Record<string, string>> = {
 };
 
 // Mock flood data - would be replaced with actual API data
-const mockFloodData: Record<string, Record<string, FloodData[]>> = {
+const mockFloodData: Record<string, Record<string, FloodDataType[]>> = {
   "chennai": {
     "chembarambakkam": [
       {
@@ -52,6 +53,16 @@ const mockFloodData: Record<string, Record<string, FloodData[]>> = {
         maxLevel: 3.5,
         status: "warning",
         description: "Water level is approaching caution levels. Monitor closely."
+      }
+    ],
+    "adyar": [
+      {
+        location: "Adyar River",
+        date: "May 15, 2024",
+        level: 1.8,
+        maxLevel: 3.0,
+        status: "normal",
+        description: "Current flow rates are normal. No flood warnings."
       }
     ],
     "velachery": [
@@ -83,6 +94,48 @@ const mockFloodData: Record<string, Record<string, FloodData[]>> = {
         status: "warning",
         description: "Lake froth has increased due to recent rainfall. Surrounding areas should monitor conditions."
       }
+    ],
+    "hesaraghatta": [
+      {
+        location: "Hesaraghatta Lake",
+        date: "May 15, 2024",
+        level: 1.2,
+        maxLevel: 2.0,
+        status: "normal",
+        description: "Water levels are stable. No flooding concerns."
+      }
+    ],
+    "ulsoor": [
+      {
+        location: "Ulsoor Lake",
+        date: "May 15, 2024",
+        level: 1.5,
+        maxLevel: 2.2,
+        status: "normal",
+        description: "Normal water levels with good outflow management."
+      }
+    ]
+  },
+  "hyderabad": {
+    "hussain-sagar": [
+      {
+        location: "Hussain Sagar",
+        date: "May 15, 2024",
+        level: 2.8,
+        maxLevel: 3.2,
+        status: "warning",
+        description: "Water levels elevated after recent rainfall. Monitoring recommended."
+      }
+    ],
+    "osmansagar": [
+      {
+        location: "Osmansagar",
+        date: "May 15, 2024",
+        level: 2.2,
+        maxLevel: 3.5,
+        status: "normal",
+        description: "Dam levels are within normal operating parameters."
+      }
     ]
   }
 };
@@ -90,7 +143,7 @@ const mockFloodData: Record<string, Record<string, FloodData[]>> = {
 const FloodData = () => {
   const { locationId, sublocationId } = useParams<{ locationId: string, sublocationId: string }>();
   const navigate = useNavigate();
-  const [floodData, setFloodData] = useState<FloodData[]>([]);
+  const [floodData, setFloodData] = useState<FloodDataType[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const locationName = locationId && sublocationId 

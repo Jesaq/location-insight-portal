@@ -10,7 +10,7 @@ interface Location {
   lon: number;
 }
 
-// This will be replaced by actual location data
+// Updated location coordinates to match the locationNames used in other components
 export const locationCoordinates: Record<string, Record<string, Location>> = {
   "chennai": {
     "chembarambakkam": { name: "Chembarambakkam, Chennai", lat: 13.0827, lon: 80.0482 },
@@ -19,9 +19,16 @@ export const locationCoordinates: Record<string, Record<string, Location>> = {
     "velachery": { name: "Velachery, Chennai", lat: 12.9815, lon: 80.2176 }
   },
   "bangalore": {
+    "bellandur": { name: "Bellandur Lake, Bangalore", lat: 12.9336, lon: 77.6773 },
+    "hesaraghatta": { name: "Hesaraghatta Lake, Bangalore", lat: 13.1359, lon: 77.4899 },
+    "ulsoor": { name: "Ulsoor Lake, Bangalore", lat: 12.9828, lon: 77.6190 },
     "whitefield": { name: "Whitefield, Bangalore", lat: 12.9698, lon: 77.7499 },
     "electronic-city": { name: "Electronic City, Bangalore", lat: 12.8452, lon: 77.6602 },
     "koramangala": { name: "Koramangala, Bangalore", lat: 12.9279, lon: 77.6271 }
+  },
+  "hyderabad": {
+    "hussain-sagar": { name: "Hussain Sagar, Hyderabad", lat: 17.4239, lon: 78.4738 },
+    "osmansagar": { name: "Osmansagar, Hyderabad", lat: 17.3814, lon: 78.3000 }
   }
 };
 
@@ -33,7 +40,8 @@ export const fetchWeatherData = async (
     const location = locationCoordinates[locationId]?.[sublocationId];
     
     if (!location) {
-      throw new Error("Location not found");
+      console.error(`Location not found for ${locationId}/${sublocationId}`);
+      throw new Error(`Location not found: ${locationId}/${sublocationId}`);
     }
     
     const url = `${BASE_URL}?lat=${location.lat}&lon=${location.lon}&appid=${API_KEY}&units=metric`;
