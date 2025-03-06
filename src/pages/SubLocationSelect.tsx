@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import LocationCard from "@/components/LocationCard";
 import { ArrowLeft } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 // Sample sublocation data - this would come from your API or database
 const sublocationData: Record<string, Array<{
@@ -55,6 +56,24 @@ const sublocationData: Record<string, Array<{
       name: "Ulsoor Lake",
       description: "Historic lake in central Bangalore",
       image: "/placeholder.svg"
+    },
+    {
+      id: "whitefield",
+      name: "Whitefield",
+      description: "Major tech hub with several water bodies",
+      image: "/placeholder.svg"
+    },
+    {
+      id: "electronic-city",
+      name: "Electronic City",
+      description: "Tech district with surrounding water bodies",
+      image: "/placeholder.svg"
+    },
+    {
+      id: "koramangala",
+      name: "Koramangala",
+      description: "Upscale neighborhood with urban lakes",
+      image: "/placeholder.svg"
     }
   ],
   "hyderabad": [
@@ -93,8 +112,40 @@ const SubLocationSelect = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const sublocations = locationId ? sublocationData[locationId] || [] : [];
-  const locationName = locationId ? locationNames[locationId] || locationId : "";
+  // Check if the locationId is actually a valid top-level location
+  const isValidLocation = locationId && locationId in locationNames;
+  
+  // If not, it might be a sublocation ID, let's try to find its parent location
+  const findParentLocation = (possibleSublocationId: string | undefined) => {
+    if (!possibleSublocationId) return null;
+    
+    for (const [locationKey, sublocations] of Object.entries(sublocationData)) {
+      const found = sublocations.find(sub => sub.id === possibleSublocationId);
+      if (found) {
+        return locationKey;
+      }
+    }
+    return null;
+  };
+  
+  // If locationId is not a valid top-level location, check if it's a sublocation
+  const parentLocationId = isValidLocation ? locationId : findParentLocation(locationId);
+  
+  // Use the correct locationId (either direct or parent)
+  const effectiveLocationId = parentLocationId || locationId;
+  const sublocations = effectiveLocationId ? sublocationData[effectiveLocationId] || [] : [];
+  const locationName = effectiveLocationId ? locationNames[effectiveLocationId] || effectiveLocationId : "";
+
+  // If we detected a sublocation directly in the URL, inform the user
+  useEffect(() => {
+    if (parentLocationId && locationId && parentLocationId !== locationId) {
+      toast({
+        title: "Navigated to parent location",
+        description: `Showing sublocations for ${locationNames[parentLocationId]}`,
+        duration: 3000
+      });
+    }
+  }, [locationId, parentLocationId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white">
